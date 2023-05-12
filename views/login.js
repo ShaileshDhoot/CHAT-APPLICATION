@@ -3,14 +3,16 @@ document.getElementById('loginBtn').addEventListener('click', (e)=>{
     e.preventDefault()
 
     const loginEmail = document.getElementById('Lemail').value
-    const loginPassword = document.getElementById('Lpassword')
-
+    const loginPassword = document.getElementById('Lpassword').value
+    console.log(loginEmail,loginPassword);
     axios.post('/user/login', {
         email: loginEmail,
         password: loginPassword
-    }).then(()=>{
+    }).then((response)=>{
         localStorage.setItem('token', response.data.token);
-        alert('welcome to Sandesh')
+        localStorage.setItem('userName', response.data.userName);
+                
+        alert(`hi ${response.data.userName}welcome to Sandesh`)
         window.location.href = '/sandesh.html';
 
     }).catch(err=>console.log(err))

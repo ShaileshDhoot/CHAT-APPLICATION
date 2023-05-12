@@ -59,13 +59,15 @@ const login =async (req,res)=>{
   User.findOne({ where: { email: emailId } })
   .then(user => {
     if (user) {
+      const username = user.name
       bcrypt.compare(password, user.password, (err, result) => {
       if (err) {
         console.log(err)
         res.status(500).send({ message: "Server error" })
       }else if (result) {
            // console.log('success')
-        return res.status(200).send({message: "welcome", token: generateAccessToken(user.id)});            
+           console.log( username);
+        return res.status(200).send({message: "welcome", token: generateAccessToken(user.id) , userName: username});            
       }else {
         res.status(401).send({ message: "Invalid password" })
       }
