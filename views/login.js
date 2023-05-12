@@ -12,7 +12,7 @@ document.getElementById('loginBtn').addEventListener('click', (e)=>{
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('userName', response.data.userName);
                 
-        alert(`hi ${response.data.userName}welcome to Sandesh`)
+        alert(`hi ${response.data.userName} welcome to Sandesh`)
         window.location.href = '/sandesh.html';
 
     }).catch(err=>console.log(err))
