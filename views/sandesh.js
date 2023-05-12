@@ -39,7 +39,7 @@ const sendMessageBE =  (e)=>{
     .then((response)=>{
         console.log('post requrest response', response);
         messageInput.value = '';
-        window.location.reload();
+        // window.location.reload();
     })
     .catch((err) => console.log(err));
 }
@@ -49,13 +49,26 @@ sendButton.addEventListener('click', sendMessageBE);
 window.addEventListener('DOMContentLoaded',(e)=>{
     e.preventDefault();
 
-    const token = localStorage.getItem('token')
-    axios.get('/sandesh/message/all', { headers: { Authorization: token } })
-    .then((response)=>{
-        console.log(response);
-        console.log(response.data);
-        response.data.forEach((message) => {
-        addChatMessage(message);
+    const token = localStorage.getItem('token');
+    setInterval(() => {
+        axios.get('/sandesh/message/all', { headers: { Authorization: token } })
+        .then((response)=>{
+            console.log(response);
+            console.log(response.data);
+            if (response.data) {
+                response.data.forEach((message) => {
+                    chatList.innerHTML = ''; // clear the existing messages
+                    addChatMessage(message);
+                });
+            }
         })
-    })
+    }, 1000);
 })
+
+// to stop this madness of setinterval
+
+intervalId = setInterval(getAllMessages, 1000);
+
+setTimeout(() => {
+  clearInterval(intervalId);
+}, 10000);
