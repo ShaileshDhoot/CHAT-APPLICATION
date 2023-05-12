@@ -21,6 +21,6 @@ app.use((req, res, next) => {
 
 sequelize.sync()  // {force:true}
 .then(()=>{
-    app.listen(process.env.PORT || 3000);
+    app.listen( 3000);
 })
 .catch(err=> console.log(err));
