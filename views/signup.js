@@ -15,7 +15,8 @@ form.addEventListener('submit', (e)=>{
         password: password
     } )
     .then(()=>{ 
-        window.location.href = './index.html'
+        alert('SignUP successful')
+        window.location.href = '/index.html'
     })
     .catch(err=>console.log(err))
 })

@@ -13,7 +13,7 @@ document.getElementById('loginBtn').addEventListener('click', (e)=>{
         localStorage.setItem('userName', response.data.userName);
                 
         alert(`hi ${response.data.userName} welcome to Sandesh`)
-        window.location.href = '/sandesh.html';
+         window.location.href = '/sandesh.html';
 
     }).catch(err=>console.log(err))
 

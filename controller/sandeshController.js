@@ -1,6 +1,6 @@
 const Chat = require('../model/chatModel');
-const User = require('../model/userModel');
 const sequelize = require('../util/db')
+const { Op } = require("sequelize"); // provides operators in sequelize
 
 
 const sandesh = async( req,res)=>{
@@ -15,8 +15,7 @@ const sandesh = async( req,res)=>{
         
         await Chat.create({
             name: name,
-            chat: chat,
-            userId: req.user.id
+            chat: chat
         })
         return res.status(201).json({message:'chat sent success'})
 
@@ -27,17 +26,41 @@ const sandesh = async( req,res)=>{
     
 }
 
-const allSandesh = async(req,res,next)=>{
-    try{
-
-        const message = await Chat.findAll()
-        return res.status(200).json(message)
-
-    }catch(error){
-        
-        console.log(error);
-        res.status(500).jason({message: 'server issue'})
+const allSandesh = async (req, res, next) => {
+    try {
+      const lastMessageId = parseInt(req.query.lastMessageId) || 0;
+      console.log(lastMessageId);
+      const messages = await Chat.findAll({
+        where: {
+          id: { [Op.gt]: lastMessageId } // Op.gt refers to greater than operator
+        },                               // with this we can get all the messages whove id is greater than query id       
+          limit: 10,
+          order: [['id', 'DESC']]     // and setting the limit to 10 so that no more than  10 message swill go in response 
+      });                                 // because we have restricted local storage to store 10 messages only      
+  
+      return res.status(200).json(messages);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "server issue" });
     }
-}
+  };
+  
+
+
+
+
+
+// const allSandesh = async(req,res,next)=>{
+//     try{
+
+//         const message = await Chat.findAll()
+//         return res.status(200).json(message)
+
+//     }catch(error){
+
+//         console.log(error);
+//         res.status(500).jason({message: 'server issue'})
+//     }
+// }
 
 module.exports = {sandesh, allSandesh}

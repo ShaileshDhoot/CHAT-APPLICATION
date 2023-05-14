@@ -18,10 +18,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/user', userRoutes);
 app.use('/sandesh', sandeshRoutes)
 
-app.use((req, res, next) => {
-    console.log('url---->>>',req.url)
-    res.sendFile(path.join(__dirname,`views/${req.url}`))
-});
+app.use(express.static(path.join(__dirname, 'views')));
+
 
 User.hasMany(Chat);
 Chat.belongsTo(User);
