@@ -107,20 +107,28 @@ sendButton.addEventListener('click', (e) => {
 //   })
 //   .catch((err) => console.log(err));
 
+
+
   // thw way chat message display on DOM
 
-  function addChatMessage(element) {
+function addChatMessage(element) {
     const li = document.createElement("li");
     li.classList.add("chat-message");
-  
-    const content = document.createElement("div");
-    content.classList.add("chat-message-content");
-    // console.log(element);
-    content.innerHTML = `<p>${element.name}: ${element.chat}</p>`;
-    li.appendChild(content);
-  
-    chatList.appendChild(li);  
+
+    const content = document.createElement("div")
+    content.classList.add("chat-message-content")
+
+    // Check if element.name matches the value in local storage
+    if (element.name === localStorage.getItem('userName')) {
+        content.classList.add("align-right"); // Add a CSS class to align the content to the right
+    }
+
+    content.innerHTML = `<p>${element.name}: ${element.chat}</p>`
+    li.appendChild(content)
+
+    chatList.appendChild(li)
 }
+
 
 // display the chat from LS
 // document.addEventListener('DOMContentLoaded', () => {
@@ -133,6 +141,8 @@ sendButton.addEventListener('click', (e) => {
 //   }
 // })
 
+// show groups on left side of page
+
 function displayGroup(element){
   const li = document.createElement('li');
   const newGroup = document.createElement('button')
@@ -142,21 +152,20 @@ function displayGroup(element){
   //console.log(newGroup.id);
   newGroup.addEventListener('click', () => {
     localStorage.setItem('groupId', element.id);
+    document.getElementById('groupNameDisplay').textContent = element.name
+    document.getElementById('groupMenu').style.display="block"
     axios.get(`/sandesh/message/${element.id}`)
       .then(response => {
         response.data.forEach(data => {
           addChatMessage(data);
         });
       })
-      .catch(error => {
-        console.error(error);
-      });
+      .catch(error => console.log(error));
   });
   document.getElementById('groupName').value= ""
   newGroup.style.width = '100%'
   li.appendChild(newGroup);
-  chatGroup.appendChild(li);
-  
+  chatGroup.appendChild(li);  
 }
 
 // show groups from DB
@@ -169,10 +178,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
   })  
   .then((response) => {
-    console.log(response);
+    //console.log(response);
     response.data.forEach((element)=>{
       displayGroup(element)
     }) 
   })
   .catch(error => console.log(error));  
 })
+

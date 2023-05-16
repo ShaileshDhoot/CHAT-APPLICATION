@@ -23,7 +23,14 @@
         </div>
 
         <div class="col-8" style="background-color: aquamarine;">
-            <form id="groupDetails" style="display: none; position: absolute; top: 5%;">
+            <span id="groupNameDisplay" style="position: absolute; top: 0%;"></span>
+            <span id="groupMenu" style="display: none; position: absolute; top: 5%;">
+                <button type="button" id="addMemberBtn">Add Member</button>
+                <button type="button" id="deleteMemberBtn">Delete Member</button>
+                <button type="button" id="deleteGroupBtn">Delete Group</button>
+                <button type="button" id="addAdmin">Add Admin</button>
+            </span>
+            <form id="groupDetails" style="display: none; position: absolute; top: 50%;">
                 <label for="groupName">Group Name:</label>
                 <input type="text" name="groupName" id="groupName">
                 
@@ -32,7 +39,7 @@
               
                 <button type="button" id="createGroupFormBtn">Create Group</button>
               </form>
-            <ul id="chat-list">
+            <ul id="chat-list" style="position:absolute; top:10%;">
     
             </ul>
             <form>

@@ -57,8 +57,7 @@ const allSandesh = async (req, res, next) => {
     const messages = await Chat.findAll({
       where: {
        groupId : id 
-      },                                 
-        limit: 10,
+      }, 
         order: [['groupId', 'DESC']]    
     });                                      
 
