@@ -22,13 +22,9 @@ const signUp = async (req, res) => {
           ]
         }
       });
-  
-    
-
     if (userExist) {
       return res.status(409).send({ message: 'User already exists, Please Login' });
     }
-
     const hash = bcrypt.hashSync(password, 10);
     await User.create({
       name: name,
@@ -36,7 +32,6 @@ const signUp = async (req, res) => {
       email: email,
       password: hash,
     });
-
     res.status(201).send({ message: 'Signup success Welcome to Chat App' });
   } catch (error) {
     console.log(error);
@@ -60,6 +55,7 @@ const login =async (req,res)=>{
   .then(user => {
     if (user) {
       const username = user.name
+      const userId = user.id
       bcrypt.compare(password, user.password, (err, result) => {
       if (err) {
         console.log(err)
@@ -67,7 +63,7 @@ const login =async (req,res)=>{
       }else if (result) {
            // console.log('success')
            console.log( username);
-        return res.status(200).send({message: "welcome", token: generateAccessToken(user.id) , userName: username});            
+        return res.status(200).send({message: "welcome", token: generateAccessToken(user.id) , userName: username, userId: userId});            
       }else {
         res.status(401).send({ message: "Invalid password" })
       }
@@ -83,4 +79,19 @@ const login =async (req,res)=>{
   
 }
 
-module.exports = { signUp ,generateAccessToken, login};
+const getAllUserNames = (req, res) => {
+  User.findAll({
+    attributes: ['id','name']
+  })
+  .then(users => {
+    
+    res.status(200).json(users);
+  })
+  .catch(error => {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  });
+}
+
+
+module.exports = { signUp ,generateAccessToken, login , getAllUserNames};

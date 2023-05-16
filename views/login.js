@@ -11,7 +11,7 @@ document.getElementById('loginBtn').addEventListener('click', (e)=>{
     }).then((response)=>{
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('userName', response.data.userName);
-                
+        localStorage.setItem('userId', response.data.userId);        
         alert(`hi ${response.data.userName} welcome to Sandesh`)
          window.location.href = '/sandesh.html';
 

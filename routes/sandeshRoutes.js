@@ -6,6 +6,6 @@ const middleware = require('../middleware/auth')
 
 router.post('/message',  sandeshController.sandesh)
 
-router.get('/message', sandeshController.allSandesh)
+router.get('/message/:groupId', sandeshController.allSandesh)
 
 module.exports = router

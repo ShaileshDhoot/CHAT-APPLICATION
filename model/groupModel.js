@@ -2,7 +2,7 @@ const Sequelize= require('sequelize');
 
 const sequelize = require('../util/db');
 
-const Chat = sequelize.define('chat', {
+const ChatGroup = sequelize.define('group', {
     id:{
       type: Sequelize.INTEGER,
       autoIncrement: true,        
@@ -13,20 +13,12 @@ const Chat = sequelize.define('chat', {
       type: Sequelize.STRING,
       allowNull: false
     },
-    chat:{
-        type: Sequelize.STRING,
+    members:{
+        type: Sequelize.TEXT,
         allowNull: false 
     }
   });
-  
-  module.exports = Chat
 
+  module.exports = ChatGroup
 
-
-
-  // can create onject in a column in sequelize  
-  // myObject: {
-    // type: DataTypes.JSON,
-    // allowNull: true
-
-    
+     // using userId to know who created the group, using association

@@ -1,36 +1,70 @@
+// chat message input box
 const messageInput = document.querySelector('#message-input');
+// send chat button
 const sendButton = document.querySelector('#send-button');
+// UL for chats
 const chatList = document.querySelector('#chat-list');
+//UL for groups
+const chatGroup = document.querySelector('#chat-group')
 
+//
 const user = localStorage.getItem('userName');
 const heading = document.getElementById('heading');
-heading.innerHTML = `<h1>Hi ${user}  Welcome to Sandesh</h1>`;
+heading.innerText = `Hi ${user}  Welcome to Sandesh`;
 
-// will keep 10 chat in LS
-const userChatLS_length = 10;
+// create group form
 
+document.getElementById('createGroupFormBtn').addEventListener('click', ()=>{
+   
+    const name = document.getElementById('groupName').value;
+    const members = Array.from(document.getElementById('groupMembers').selectedOptions).map(
+      (option) => option.value
+    );
+      
+    axios.post("/group/create", { name, members, userId:localStorage.getItem('userId'), groupId: localStorage.getItem('groupId') }, {
+      headers: {
+        Authorization:  localStorage.getItem('token')
+      }
+    })
+    
+      .then((response) => {
+        console.log('created new group');
+        document.getElementById('groupDetails').style.display = 'none'       
+      })
+      .catch((error) => {
+        console.error(error);
+      });  
+})
 
-function addChatMessage(element) {
-    const li = document.createElement("li");
-    li.classList.add("chat-message");
-  
-    const content = document.createElement("div");
-    content.classList.add("chat-message-content");
-    console.log(element);
-    content.innerHTML = `<p>${element.name}: ${element.chat}</p>`;
-    li.appendChild(content);
-  
-    chatList.appendChild(li);
-  
-}
-  
+// create group 
 
+createGroupBtn.addEventListener('click', () => {
 
-// Call addChatMessage to add the new chat message from the DOM
+  document.getElementById('groupDetails').style.display = 'block';
+
+  axios.get('/user/all')
+    .then(response => {
+      const users = response.data
+      let optionsHtml = ''
+
+      users.forEach(user => {
+        optionsHtml += `<option value="${user.id}">${user.name}</option>`;
+      })
+
+      document.getElementById('groupMembers').innerHTML = optionsHtml;
+    })
+    .catch(error => {
+      console.log(error);
+    });
+});
+
+// post chat to BE
 
 sendButton.addEventListener('click', (e) => {
   e.preventDefault();
   const token = localStorage.getItem('token');
+  const userId = localStorage.getItem('userId')
+  const groupId = localStorage.getItem('groupId')
   const message = messageInput.value.trim();
 
   if (!message) {
@@ -40,58 +74,105 @@ sendButton.addEventListener('click', (e) => {
   axios.post('/sandesh/message', {
           name: user,
           chat: message,
+          userId: userId,
+          groupId: groupId
       }, {headers: {Authorization: token}})
       .then((response) => {
-          console.log('post request response', response);
-          // Add the message to local storage
-          const allChatLS = JSON.parse(localStorage.getItem("allchat")) || [];
-          allChatLS.unshift(response.data);
-          if (allChatLS.length > userChatLS_length) {
-              allChatLS.pop();
-          }
-          localStorage.setItem("allchat", JSON.stringify(allChatLS));
-          // Clear the input field
+           console.log('post request response', response);
           messageInput.value = '';
       })
       .catch((err) => console.log(err));
-});
- 
+})
 
+  // call 10 chat from DB
+  // will keep 10 chat in LS
+// const userChatLS_length = 10;
+// const allChatLS = JSON.parse(localStorage.getItem("allchat")) || [];
+// const lastMessageId = allChatLS.length ? allChatLS[0].id : 0;
+// const token = localStorage.getItem("token");
+// axios
+//   .get(`/sandesh/message?lastMessageId=${lastMessageId + 1}`, {
+//     headers: { Authorization: token },
+//   })
+//   .then((response) => {
+//     if (response.data) {
+//         response.data.forEach((message) => {
+//         allChatLS.unshift(message);
+//         if (allChatLS.length > userChatLS_length) {
+//           allChatLS.pop();
+//       }  
+//         localStorage.setItem("allchat", JSON.stringify(allChatLS));
+//       });
+//     }
+//   })
+//   .catch((err) => console.log(err));
 
-// to get message from backend --> LS has stored some and it wil get messages from after that id
-// define a separate variable for lastMessageId
+  // thw way chat message display on DOM
 
-
-
-    const allChatLS = JSON.parse(localStorage.getItem("allchat")) || [];
-    const lastMessageId = allChatLS.length ? allChatLS[0].id : 0;
-  console.log(lastMessageId);
-  console.log(allChatLS);
-    const token = localStorage.getItem("token");
-    axios
-      .get(`/sandesh/message?lastMessageId=${lastMessageId + 1}`, {
-        headers: { Authorization: token },
-      })
-      .then((response) => {
-        if (response.data) {
-            response.data.forEach((message) => {
-            allChatLS.unshift(message);
-            localStorage.setItem("allchat", JSON.stringify(allChatLS));
-          });
-        }
-      })
-      .catch((err) => console.log(err));
-
+  function addChatMessage(element) {
+    const li = document.createElement("li");
+    li.classList.add("chat-message");
   
+    const content = document.createElement("div");
+    content.classList.add("chat-message-content");
+    // console.log(element);
+    content.innerHTML = `<p>${element.name}: ${element.chat}</p>`;
+    li.appendChild(content);
+  
+    chatList.appendChild(li);  
+}
 
-// display the chat stored in local storage on DOM when the page loads
-document.addEventListener('DOMContentLoaded', () => {
-  const allChatLS = JSON.parse(localStorage.getItem("allchat")) || [];
-  if (allChatLS) {
-      allChatLS.forEach((message) => {
-          addChatMessage(message);
+// display the chat from LS
+// document.addEventListener('DOMContentLoaded', () => {
+//   const allChatLS = JSON.parse(localStorage.getItem("allchat")) || [];
+//   //console.log(allChatLS);
+//   if (allChatLS) {
+//       allChatLS.forEach((message) => {
+//           addChatMessage(message);
+//       });
+//   }
+// })
+
+function displayGroup(element){
+  const li = document.createElement('li');
+  const newGroup = document.createElement('button')
+  //console.log(element);
+  newGroup.innerText = element.name
+  newGroup.id = element.id
+  //console.log(newGroup.id);
+  newGroup.addEventListener('click', () => {
+    localStorage.setItem('groupId', element.id);
+    axios.get(`/sandesh/message/${element.id}`)
+      .then(response => {
+        response.data.forEach(data => {
+          addChatMessage(data);
+        });
+      })
+      .catch(error => {
+        console.error(error);
       });
-  }
-});
+  });
+  document.getElementById('groupName').value= ""
+  newGroup.style.width = '100%'
+  li.appendChild(newGroup);
+  chatGroup.appendChild(li);
+  
+}
 
+// show groups from DB
 
+document.addEventListener('DOMContentLoaded', ()=>{
+      
+  axios.get(`/group/all/${localStorage.getItem('userId')}`, {
+    headers: {
+      Authorization:  localStorage.getItem('token')
+    }
+  })  
+  .then((response) => {
+    console.log(response);
+    response.data.forEach((element)=>{
+      displayGroup(element)
+    }) 
+  })
+  .catch(error => console.log(error));  
+})
