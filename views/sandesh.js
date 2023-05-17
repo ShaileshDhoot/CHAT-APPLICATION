@@ -16,12 +16,15 @@ heading.innerText = `Hi ${user}  Welcome to Sandesh`;
 
 document.getElementById('createGroupFormBtn').addEventListener('click', ()=>{
    
-    const name = document.getElementById('groupName').value;
-    const members = Array.from(document.getElementById('groupMembers').selectedOptions).map(
-      (option) => option.value
-    );
-      
-    axios.post("/group/create", { name, members, userId:localStorage.getItem('userId'), groupId: localStorage.getItem('groupId') }, {
+  const groupName = document.getElementById('groupName').value;
+  const checkboxes = Array.from(document.querySelectorAll('#groupMembers input[type="checkbox"]'))// to create array of checked values
+  console.log(checkboxes);
+  const members = checkboxes
+    .filter(checkbox => checkbox.checked)// filter out the names that have been checked
+    .map(checkbox => checkbox.value) // map out the names and then we get array of names selected
+    console.log(members);
+     const admin =  localStorage.getItem('userId');
+    axios.post("/group/create", { createdBy:admin, groupName, members}, {
       headers: {
         Authorization:  localStorage.getItem('token')
       }
@@ -39,22 +42,153 @@ document.getElementById('createGroupFormBtn').addEventListener('click', ()=>{
 // create group 
 
 createGroupBtn.addEventListener('click', () => {
-
   document.getElementById('groupDetails').style.display = 'block';
 
   axios.get('/user/all')
     .then(response => {
-      const users = response.data
-      let optionsHtml = ''
+      const users = response.data;
+      let checkboxesHtml = '';
 
       users.forEach(user => {
-        optionsHtml += `<option value="${user.id}">${user.name}</option>`;
-      })
+        checkboxesHtml += `<label><input type="checkbox" value="${user.id}" />  ${user.name}  </label><br>`
+      });
 
-      document.getElementById('groupMembers').innerHTML = optionsHtml;
+      document.getElementById('groupMembers').innerHTML = checkboxesHtml;
     })
     .catch(error => {
       console.log(error);
+    });
+});
+//---***************
+
+//Add more members to the group
+
+document.getElementById('addMemberBtn').addEventListener('click',()=>{
+  document.getElementById('groupUpdate').style.display = 'block';
+  axios.get('/user/all')
+  .then(response => {
+    const users = response.data;
+    let checkboxesHtml = '';
+
+    users.forEach(user => {
+      checkboxesHtml += `<label><input type="checkbox" value="${user.id}" />  ${user.name}  </label><br>`
+    });
+
+    document.getElementById('updateGroupMembers').innerHTML = checkboxesHtml;
+  })
+  .catch(error => {
+    console.log(error);
+  });
+
+})
+
+document.getElementById('updateGroupFormBtn').addEventListener('click', ()=>{
+   
+  const checkboxes = Array.from(document.querySelectorAll('#updateGroupMembers input[type="checkbox"]'))// to create array of checked values
+  //console.log(checkboxes);
+  const members = checkboxes
+    .filter(checkbox => checkbox.checked)// filter out the names that have been checked
+    .map(checkbox => checkbox.value) // map out the names and then we get array of names selected
+    console.log(members);
+      const groupID = localStorage.getItem('groupId')
+    axios.put(`/group/members/add/${groupID}`, {  members }, {
+      headers: {
+        Authorization:  localStorage.getItem('token')
+      }
+    })
+    
+      .then((response) => {
+        console.log('updated group');
+        document.getElementById('groupUpdate').style.display = 'none'       
+      })
+      .catch((error) => {
+        console.error(error);
+      });  
+})
+
+// delete members of group
+document.getElementById('deleteMemberBtn').addEventListener('click',()=>{
+  document.getElementById('deleteMemberFromGroup').style.display = 'block';
+  const groupId = localStorage.getItem('groupId')
+  axios.get(`/group/members/${groupId}`, {headers: {Authorization:  localStorage.getItem('token')}})
+  .then(response => {
+    const users = response.data;
+    let checkboxesHtml = '';
+
+    users.forEach(user => {
+      checkboxesHtml += `<label><input type="checkbox" value="${user.id}" />  ${user.name}  </label><br>`
+    });
+
+    document.getElementById('deleteGroupMembers').innerHTML = checkboxesHtml;
+  })
+  .catch(error => {
+    console.log(error);
+  });
+
+})
+
+document.getElementById('deleteMemberFromGroupFormBtn').addEventListener('click', ()=>{
+   
+  const checkboxes = Array.from(document.querySelectorAll('#deleteGroupMembers input[type="checkbox"]'))// to create array of checked values
+  //console.log(checkboxes);
+  const members = checkboxes
+    .filter(checkbox => checkbox.checked)// filter out the names that have been checked
+    .map(checkbox => checkbox.value) // map out the names and then we get array of names selected
+    console.log(members);
+      const groupID = localStorage.getItem('groupId')
+    axios.put(`/group/members/delete/${groupID}`, {  members }, {
+      headers: {
+        Authorization:  localStorage.getItem('token')
+      }
+    })
+    
+      .then((response) => {
+        console.log('updated group');
+        document.getElementById('deleteMemberFromGroup').style.display = 'none'       
+      })
+      .catch((error) => {
+        console.error(error);
+      });  
+})
+
+// add admin to the group
+
+document.getElementById('addAdminBtn').addEventListener('click', () => {
+  document.getElementById('addAdminForm').style.display = 'block';
+  axios.get(`/group/members/${localStorage.getItem('groupId')}`, {headers: {Authorization:  localStorage.getItem('token')}})
+    .then(response => {
+      const users = response.data;
+      let checkboxesHtml = '';
+
+      users.forEach(user => {
+        checkboxesHtml += `<label><input type="checkbox" value="${user.id}" />  ${user.name}  </label><br>`;
+      });
+
+      document.getElementById('addAdminMembers').innerHTML = checkboxesHtml;
+    })
+    .catch(error => {
+      console.log(error);
+    });
+});
+
+document.getElementById('addAdminFormBtn').addEventListener('click', () => {
+  const checkboxes = Array.from(document.querySelectorAll('#addAdminMembers input[type="checkbox"]'));
+  const admins = checkboxes
+    .filter(checkbox => checkbox.checked)
+    .map(checkbox => checkbox.value);
+  
+  const groupId = localStorage.getItem('groupId');
+  axios.put(`/group/add/admin/${groupId}`, { userIds: admins }, {
+      headers: {
+        Authorization: localStorage.getItem('token')
+      }
+    })
+    .then((response) => {
+      console.log('Updated group:', response.data);
+      document.getElementById('addAdminForm').style.display = 'none';
+    })
+    .catch((error) => {
+      console.error(error);
     });
 });
 
@@ -112,19 +246,14 @@ sendButton.addEventListener('click', (e) => {
   // thw way chat message display on DOM
 
 function addChatMessage(element) {
-    const li = document.createElement("li");
-    li.classList.add("chat-message");
+    const li = document.createElement("li")
+    li.classList.add("chat-message")
 
-    const content = document.createElement("div")
-    content.classList.add("chat-message-content")
-
-    // Check if element.name matches the value in local storage
     if (element.name === localStorage.getItem('userName')) {
-        content.classList.add("align-right"); // Add a CSS class to align the content to the right
-    }
+      li.style.textAlign = "right"
+    }   
 
-    content.innerHTML = `<p>${element.name}: ${element.chat}</p>`
-    li.appendChild(content)
+    li.innerHTML = `${element.name}: ${element.chat}`    
 
     chatList.appendChild(li)
 }
@@ -152,8 +281,15 @@ function displayGroup(element){
   //console.log(newGroup.id);
   newGroup.addEventListener('click', () => {
     localStorage.setItem('groupId', element.id);
-    document.getElementById('groupNameDisplay').textContent = element.name
-    document.getElementById('groupMenu').style.display="block"
+    document.getElementById('groupNameDisplay').textContent = element.name;
+    if (element.admin.split(',').includes(localStorage.getItem('userId'))) {
+      document.getElementById('groupMenu').style.display = 'block';
+      console.log('user is admin')
+    } else {
+      document.getElementById('groupMenu').style.display = 'none';
+      console.log('user is not admin');
+    }
+
     axios.get(`/sandesh/message/${element.id}`)
       .then(response => {
         response.data.forEach(data => {
@@ -186,3 +322,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
   .catch(error => console.log(error));  
 })
 
+// delete group
+
+document.getElementById('deleteGroupBtn').addEventListener('click',()=>{
+
+  const id = localStorage.getItem('groupId')
+  axios.delete(`group/delete/${id}`)
+  .then(()=>{
+    console.log('group deleted');
+  }).catch(err=>console.log(err))
+})

@@ -9,7 +9,11 @@ const ChatGroup = sequelize.define('group', {
       allowNull: false,
       primaryKey: true
     },
-    name: {
+    createdBy:{
+      type: Sequelize.TEXT,
+      allowNull:false
+    },
+    groupName: {
       type: Sequelize.STRING,
       allowNull: false
     },
@@ -21,4 +25,4 @@ const ChatGroup = sequelize.define('group', {
 
   module.exports = ChatGroup
 
-     // using userId to know who created the group, using association
+    

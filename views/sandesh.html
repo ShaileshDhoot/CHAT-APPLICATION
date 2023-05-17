@@ -17,9 +17,9 @@
     <div class="row">       
    
         <div class="col-4" style="background-color: darkolivegreen; ">
-            <div ><h3 id="heading"></h3></div>
-            <button id="createGroupBtn">Create Chat Group</button>
-            <ul id="chat-group"></ul>
+            <div ><h3 id="heading"></h3></div><br>
+            <button id="createGroupBtn">Create Chat Group</button><br><br>
+            <ul id="chat-group" class="no-bullets"></ul>
         </div>
 
         <div class="col-8" style="background-color: aquamarine;">
@@ -28,20 +28,43 @@
                 <button type="button" id="addMemberBtn">Add Member</button>
                 <button type="button" id="deleteMemberBtn">Delete Member</button>
                 <button type="button" id="deleteGroupBtn">Delete Group</button>
-                <button type="button" id="addAdmin">Add Admin</button>
+                <button type="button" id="addAdminBtn">Add Admin</button>
             </span>
-            <form id="groupDetails" style="display: none; position: absolute; top: 50%;">
+            <!-- create new group -->
+            <form id="groupDetails" style="display: none; position: absolute; top: 20%;">
                 <label for="groupName">Group Name:</label>
-                <input type="text" name="groupName" id="groupName">
+                <input type="text" name="groupName" id="groupName"><br>
                 
-                <label for="groupMembers">Group Members:</label>
-                <select name="groupMembers" id="groupMembers" multiple></select>
+                <div id="groupMembers"></div><br>
               
-                <button type="button" id="createGroupFormBtn">Create Group</button>
-              </form>
-            <ul id="chat-list" style="position:absolute; top:10%;">
+                <button type="button" id="createGroupFormBtn">Create Group</button><br>
+            </form>
+            <!-- update group members -->
+            <form id="groupUpdate" style="display: none; position: absolute; top: 20%;">
+                <h3>Reselect Group Members</h3>
+                <div id="updateGroupMembers"></div><br>
+              
+                <button type="button" id="updateGroupFormBtn">Update Group Members</button><br>
+            </form>
+            <!-- delete members from group -->
+            <form id="deleteMemberFromGroup" style="display: none; position: absolute; top: 20%;">
+                
+                <div id="deleteGroupMembers"></div><br>
+              
+                <button type="button" id="deleteMemberFromGroupFormBtn">Delete Group Members</button><br>
+            </form>
+            <!-- add admin to group -->
+            <form id="addAdminForm" style="display: none; position: absolute; top: 20%;">
+                
+                <div id="addAdminMembers"></div><br>
+              
+                <button type="button" id="addAdminFormBtn">Add Admin</button><br>
+            </form>
+            <!-- UL to display chat messages -->
+            <ul id="chat-list" style="position:absolute; top:10%; width: 65%;" class="no-bullets">
     
             </ul>
+
             <form>
                 <input type="text" id="message-input">
                 <button type="submit" id="send-button">Send</button>

@@ -30,7 +30,7 @@ User.hasMany(Chat);
 Chat.belongsTo(User);
 
 User.belongsTo(Group);
-Group.belongsTo(User)
+Group.hasMany(User)
 
 Group.hasMany(Chat);
 Chat.belongsTo(Group)
